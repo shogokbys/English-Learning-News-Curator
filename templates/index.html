@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Article Processor</title>
+    <script>
+        async function checkProgress(taskId) {
+            const response = await fetch(`/progress/${taskId}`);
+            const data = await response.json();
+            document.getElementById("progress").innerText = data.status;
+            if (!data.status.includes("complete") && !data.status.includes("Error")) {
+                setTimeout(() => checkProgress(taskId), 1000);
+            }
+        }
+
+        async function startProcessing(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch("/process/", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await response.json();
+            document.getElementById("progress").innerText = "Processing started...";
+            checkProgress(data.task_id);
+        }
+    </script>
+</head>
+<body>
+    <h1>Article Processor</h1>
+    <form onsubmit="startProcessing(event)">
+        <label for="url">Enter Article URL:</label>
+        <input type="text" id="url" name="url" required>
+        <br><br>
+        <label for="generate_mp3">Generate MP3:</label>
+        <input type="checkbox" id="generate_mp3" name="generate_mp3" value="true">
+        <br><br>
+        <button type="submit">Process</button>
+    </form>
+    <p id="progress">Progress will be displayed here...</p>
+</body>
+</html>
