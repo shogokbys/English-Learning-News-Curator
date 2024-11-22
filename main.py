@@ -181,7 +181,7 @@ async def get_progress(task_id: str):
 
 
 @app.post("/process/")
-async def process_article(request: Request, background_tasks: BackgroundTasks, url: str = Form(...), generate_mp3: bool = Form(False)):
+async def process_article(request: Request, background_tasks: BackgroundTasks, url: str = Form(...), generate_mp3: bool = Form(False), generate_summary_mp3: bool = Form(False)):
     task_id = str(hash(url))
     progress[task_id] = "Starting process"
     
@@ -209,8 +209,14 @@ async def process_article(request: Request, background_tasks: BackgroundTasks, u
             tags = query_openai(f"Create one to three generalised tags to describe the following article. Use broad categories like Health, Politics, Technology, etc. Respond with tags separated by commas:\n\n{body}")
  
             if generate_mp3:
-                update_progress(task_id, "Generating MP3 file")
+                update_progress(task_id, "Generating MP3 file for full article")
                 mp3_file = create_mp3_with_google_tts(title, body, task_id)
+                drive_service = authenticate_google_drive()
+                upload_to_google_drive(mp3_file, drive_service, GOOGLE_DRIVE_FOLDER_ID, task_id)
+            
+            if generate_summary_mp3:
+                update_progress(task_id, "Generating MP3 file for summary")
+                mp3_file = create_mp3_with_google_tts("Summary-" + title, summary, task_id)
                 drive_service = authenticate_google_drive()
                 upload_to_google_drive(mp3_file, drive_service, GOOGLE_DRIVE_FOLDER_ID, task_id)
 
