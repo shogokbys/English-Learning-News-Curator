@@ -31,7 +31,14 @@ cd english-learning-news-curator
 pip install -r requirements.txt
 ```
 
-3. Set up your *Notion API key* and *Google Drive credentials*. (Instructions can be found in the respective API documentation.)
+3. Install the required OS packages:
+
+```
+sudo apt update
+sudo apt install ffmpeg libffi-dev libssl-dev
+```
+
+4. Set up your **Notion API key** and **Google Drive credentials**. (Instructions can be found in the respective API documentation.)
 
 ### Running the Application
 1. Start the server:
